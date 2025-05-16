@@ -1,0 +1,9 @@
+    if request.method == 'POST':
+        subject = request.form['subject']
+        file = request.files['file']
+        if file:
+            filename = secure_filename(file.filename)
+            subject_path = os.path.join(app.config['UPLOAD_FOLDER'], subject)
+            os.makedirs(subject_path, exist_ok=True)
+            file.save(os.path.join(subject_path, filename))
+            return redirect(url_for('index'))

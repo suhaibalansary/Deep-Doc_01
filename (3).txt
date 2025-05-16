@@ -1,0 +1,7 @@
+    uploads = {}
+    for subject in subjects:
+        subject_path = os.path.join(app.config['UPLOAD_FOLDER'], subject)
+        if os.path.exists(subject_path):
+            uploads[subject] = os.listdir(subject_path)
+        else:
+            uploads[subject] = []
