@@ -1,0 +1,75 @@
+/* الخلفية وتنسيق الجسم */
+body {
+    font-family: 'Cairo', sans-serif;
+    background: linear-gradient(120deg, #f0f4f8, #dbe9f4);
+    color: #333;
+    padding: 20px;
+    margin: 0;
+}
+
+/* صندوق النموذج */
+form {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 16px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+    max-width: 500px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* العناوين */
+h1, h2, h3 {
+    text-align: center;
+    color: #3b5998;
+}
+
+/* الحقول */
+label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+input[type="file"],
+select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 8px;
+    border: 1px solid #ccc;
+}
+
+/* الزر */
+button {
+    background-color: #3b5998;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #2d4373;
+}
+
+/* عرض الملفات */
+.subject {
+    background-color: #fff;
+    padding: 15px;
+    margin-bottom: 20px;
+    border-radius: 12px;
+    box-shadow: 0 3px 6px rgba(0, 0, 0, 0.08);
+}
+
+ul {
+    padding-left: 20px;
+}
+
+li {
+    margin-bottom: 5px;
+    color: #555;
+}
