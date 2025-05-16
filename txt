@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>منصة المستندات الدراسية</title>
+  <!-- استدعاء خط شبيه بالرقعة -->
+  <link href="https://fonts.googleapis.com/css2?family=Amiri&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: turquoise;
+      font-family: Arial, sans-serif;
+      text-align: center;
+      direction: rtl;
+      padding-bottom: 60px;
+    }
+
+    .splash-screen {
+      position: fixed;
+      top: 0;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      background-color: turquoise;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+
+    .splash-screen h1 {
+      font-family: 'Amiri', serif;
+      font-size: 50px;
+      color: white;
+    }
+
+    h1 {
+      margin-top: 100px;
+      font-size: 32px;
+      color: white;
+    }
+
+    .subjects {
+      margin-top: 50px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    button.subject-btn {
+      background-color: #007f7f;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 8px;
+      width: 250px;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    button.subject-btn:hover {
+      background-color: #005f5f;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      padding-top: 80px;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.5);
+    }
+
+    .modal-content {
+      background-color: #f2fefe;
+      margin: auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 600px;
+      border-radius: 10px;
+      text-align: right;
+    }
+
+    .close {
+      color: #aaa;
+      float: left;
+      font-size: 28px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .close:hover {
+      color: red;
+    }
+
+    ul {
+      list-style-type: none;
+      padding: 0;
+      margin-top: 10px;
+    }
+
+    li {
+      background-color: #d0f0f0;
+      margin: 5px 0;
+      padding: 8px;
+      border-radius: 6px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    li button {
+      background-color: transparent;
+      border: none;
+      color: red;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    input[type="file"] {
+      margin: 10px 0;
+    }
+
+    iframe {
+      width: 100%;
+      height: 400px;
+      margin-top: 15px;
+      display: none;
+      border: 1px solid #ccc;
+    }
+
+    #fileHint {
+      margin-top: 15px;
+      background-color: #fff9c4;
+      padding: 10px;
+      border-radius: 8px;
+      color: #333;
+      display: none;
+    }
+
+    footer {
+      position: absolute;
+      bottom: 0;
+      width: 100%;
+      background-color: #007f7f;
+      color: white;
+      padding: 10px 0;
+      font-size: 16px;
+      text-align: center;
+      border-top: 2px solid white;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- واجهة البداية -->
+  <div class="splash-screen" id="splash">
+    <h1>مرحباً بكم</h1>
+  </div>
+
+  <h1>عامل في الميكرو معلوماتية 2025</h1>
+  <div class="subjects">
+    <button class="subject-btn" onclick="openModal('رياضيات')">📘 رياضيات</button>
+    <button class="subject-btn" onclick="openModal('أمن وسلامة')">🛡️ أمن وسلامة</button>
+    <button class="subject-btn" onclick="openModal('الحجز باللغة العربية')">📄 الحجز بالعربية</button>
+    <button class="subject-btn" onclick="openModal('الحجز باللغة الفرنسية')">📄 الحجز بالفرنسية</button>
+    <button class="subject-btn" onclick="openModal('تحديث البرامج')">🔄 تحديث البرامج</button>
+    <button class="subject-btn" onclick="openModal('English')">📚 English</button>
+    <button class="subject-btn" onclick="openModal('معالجة النصوص')">📝 معالجة النصوص</button>
+    <button class="subject-btn" onclick="openModal('نظام التشغيل')">💻 نظام التشغيل</button>
+  </div>
+
+  <!-- النافذة المنبثقة -->
+  <div id="subjectModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2 id="modalTitle">مادة</h2>
+      <input type="file" id="fileInput" multiple onchange="saveFiles()"><br>
+      <h4>📂 الملفات المرفوعة:</h4>
+      <ul id="fileList">
+        <li>لا توجد ملفات بعد</li>
+      </ul>
+      <iframe id="pdfViewer"></iframe>
+      <div id="fileHint"></div>
+    </div>
+  </div>
+
+  <footer>
+    <p>توقيع: Suhaib Alansary</p>
+  </footer>
+
+  <script>
+    let currentSubject = "";
+
+    window.onload = function () {
+      setTimeout(() => {
+        document.getElementById('splash').style.display = 'none';
+      }, 7000);
+    };
+
+    function openModal(subject) {
+      currentSubject = subject;
+      document.getElementById('modalTitle').textContent = `📁 مستندات مادة ${subject}`;
+      document.getElementById('subjectModal').style.display = 'block';
+      loadFiles();
+      document.getElementById('pdfViewer').style.display = 'none';
+      document.getElementById('fileHint').style.display = 'none';
+    }
+
+    function closeModal() {
+      document.getElementById('subjectModal').style.display = 'none';
+    }
+
+    function saveFiles() {
+      const input = document.getElementById('fileInput');
+      const files = input.files;
+      if (!files.length) return;
+
+      let savedFiles = JSON.parse(localStorage.getItem(currentSubject)) || [];
+
+      for (let file of files) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const fileData = {
+            name: file.name,
+            type: file.type,
+            content: e.target.result
+          };
+          savedFiles.push(fileData);
+          localStorage.setItem(currentSubject, JSON.stringify(savedFiles));
+          loadFiles();
+        };
+        reader.readAsDataURL(file);
+      }
+
+      input.value = '';
+    }
+
+    function loadFiles() {
+      const fileList = document.getElementById('fileList');
+      const pdfViewer = document.getElementById('pdfViewer');
+      const fileHint = document.getElementById('fileHint');
+
+      fileList.innerHTML = '';
+      pdfViewer.style.display = 'none';
+      fileHint.style.display = 'none';
+
+      const savedFiles = JSON.parse(localStorage.getItem(currentSubject)) || [];
+
+      if (savedFiles.length === 0) {
+        fileList.innerHTML = '<li>لا توجد ملفات بعد</li>';
+        return;
+      }
+
+      savedFiles.forEach((fileObj, index) => {
+        const li = document.createElement('li');
+        li.innerHTML = `${fileObj.name} <button onclick="deleteFile(${index})">❌</button>`;
+        li.onclick = () => {
+          downloadFile(fileObj.name, fileObj.content);
+          showHint(fileObj.type);
+          if (fileObj.type === 'application/pdf') {
+            pdfViewer.src = fileObj.content;
+            pdfViewer.style.display = 'block';
+          } else {
+            pdfViewer.style.display = 'none';
+          }
+        };
+        fileList.appendChild(li);
+      });
+    }
+
+    function downloadFile(filename, dataURL) {
+      const link = document.createElement('a');
+      link.href = dataURL;
+      link.download = filename;
+      link.click();
+    }
+
+    function showHint(type) {
+      const hint = document.getElementById('fileHint');
+      let message = '📂 يمكنك فتح الملف عبر: ';
+
+      if (type === 'application/pdf') {
+        message += 'متصفح الإنترنت أو تطبيق قارئ PDF مثل Adobe Acrobat.';
+      } else if (type.includes('word') || type === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') {
+        message += 'تطبيق Microsoft Word أو Google Docs.';
+      } else if (type.startsWith('image/')) {
+        message += 'عارض الصور في الجهاز.';
+      } else {
+        message += 'تطبيق مناسب حسب نوع الملف.';
+      }
+
+      hint.textContent = message;
+      hint.style.display = 'block';
+    }
+
+    function deleteFile(index) {
+      const savedFiles = JSON.parse(localStorage.getItem(currentSubject)) || [];
+      savedFiles.splice(index, 1);
+      localStorage.setItem(currentSubject, JSON.stringify(savedFiles));
+      loadFiles();
+    }
+
+    window.onclick = function(event) {
+      const modal = document.getElementById('subjectModal');
+      if (event.target == modal) {
+        modal.style.display = "none";
+      }
+    }
+  </script>
+</body>
+</html>
