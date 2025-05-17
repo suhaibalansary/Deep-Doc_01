@@ -1,79 +1,85 @@
 <!DOCTYPE html>
 <html lang="ar">
 <head>
-<meta charset="UTF-8" />
-<title>إضافة مستند داخل مادة معالجة النصوص</title>
-<style>
-  body { font-family: Arial, sans-serif; direction: rtl; padding: 20px; }
-  h2 { color: #333; }
-  #docsList { margin-top: 15px; }
-  .doc-item { margin-bottom: 10px; }
-</style>
+  <meta charset="UTF-8" />
+  <title>إضافة مستندات مادة النصوص</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      direction: rtl;
+      padding: 20px;
+    }
+    h2 { color: #333; }
+    #docsList { margin-top: 15px; }
+    .doc-item { margin-bottom: 10px; }
+    button { margin-right: 10px; }
+  </style>
 </head>
 <body>
 
-<h2>مادة معالجة النصوص</h2>
+  <h2>مادة النصوص</h2>
 
-<input type="file" id="fileInput" />
-<button onclick="addDocument()">إضافة المستند</button>
+  <input type="file" id="fileInput" />
+  <button onclick="addDocument()">إضافة المستند</button>
 
-<div id="docsList">
-  <h3>المستندات المضافة:</h3>
-  <ul id="docsUl"></ul>
-</div>
+  <div id="docsList">
+    <h3>المستندات المضافة:</h3>
+    <ul id="docsUl"></ul>
+  </div>
 
-<script>
-// تحميل المستندات من localStorage عند فتح الصفحة
-window.onload = function() {
-  loadDocuments();
-}
+  <script>
+    // تحميل المستندات عند فتح الصفحة
+    window.onload = function() {
+      loadDocuments();
+    }
 
-function addDocument() {
-  const fileInput = document.getElementById('fileInput');
-  const file = fileInput.files[0];
-  if (!file) {
-    alert('رجاءً اختر ملف لإضافته.');
-    return;
-  }
+    function addDocument() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+      if (!file) {
+        alert('رجاءً اختر ملف لإضافته.');
+        return;
+      }
 
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const content = e.target.result;
-    // نحفظ الملف في localStorage مع اسم المادة "معالجة النصوص"
-    let docs = JSON.parse(localStorage.getItem('ma3aljatAlnususDocs')) || [];
-    docs.push({ name: file.name, content: content });
-    localStorage.setItem('ma3aljatAlnususDocs', JSON.stringify(docs));
-    fileInput.value = ""; // نعيد تعيين اختيار الملف
-    loadDocuments();
-  };
-  reader.readAsDataURL(file); // نقرأ الملف كـ base64 حتى نقدر نعرضه أو نستخدمه بعدين
-}
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const content = e.target.result;
+        let docs = JSON.parse(localStorage.getItem('ma3aljatAlnususDocs')) || [];
+        docs.push({ name: file.name, content: content });
+        localStorage.setItem('ma3aljatAlnususDocs', JSON.stringify(docs));
+        fileInput.value = "";
+        loadDocuments();
+      };
 
-function loadDocuments() {
-  const docsUl = document.getElementById('docsUl');
-  docsUl.innerHTML = '';
-  let docs = JSON.parse(localStorage.getItem('ma3aljatAlnususDocs')) || [];
-  if (docs.length === 0) {
-    docsUl.innerHTML = '<li>لا يوجد مستندات مضافة بعد.</li>';
-    return;
-  }
-  docs.forEach((doc, index) => {
-    const li = document.createElement('li');
-    li.classList.add('doc-item');
-    // رابط لتحميل أو فتح الملف مباشرة
-    li.innerHTML = `<a href="${doc.content}" download="${doc.name}">${doc.name}</a> 
-                    <button onclick="deleteDocument(${index})">حذف</button>`;
-    docsUl.appendChild(li);
-  });
-}
+      reader.readAsDataURL(file);
+    }
 
-function deleteDocument(index) {
-  let docs = JSON.parse(localStorage.getItem('ma3aljatAlnususDocs')) || [];
-  docs.splice(index, 1);
-  localStorage.setItem('ma3aljatAlnususDocs', JSON.stringify(docs));
-  loadDocuments();
-}
-</script>
+    function loadDocuments() {
+      const docsUl = document.getElementById('docsUl');
+      docsUl.innerHTML = '';
+      let docs = JSON.parse(localStorage.getItem('ma3aljatAlnususDocs')) || [];
+      if (docs.length === 0) {
+        docsUl.innerHTML = '<li>لا يوجد مستندات مضافة بعد.</li>';
+        return;
+      }
+      docs.forEach((doc, index) => {
+        const li = document.createElement('li');
+        li.classList.add('doc-item');
+        li.innerHTML = `
+          <a href="${doc.content}" download="${doc.name}" target="_blank">${doc.name}</a>
+          <button onclick="deleteDocument(${index})">حذف</button>
+        `;
+        docsUl.appendChild(li);
+      });
+    }
+
+    function deleteDocument(index) {
+      let docs = JSON.parse(localStorage.getItem('ma3aljatAlnususDocs')) || [];
+      docs.splice(index, 1);
+      localStorage.setItem('ma3aljatAlnususDocs', JSON.stringify(docs));
+      loadDocuments();
+    }
+  </script>
 
 </body>
 </html>
